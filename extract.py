@@ -32,8 +32,6 @@ list_of_tables = ["language",
                   "address",
                   "city"]
 
-
-
 for table in list_of_tables:
 
     # Run query
