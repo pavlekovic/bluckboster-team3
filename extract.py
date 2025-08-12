@@ -16,11 +16,28 @@ engine = create_engine(
     f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
-query = "SELECT * FROM main.customer LIMIT 10;"
+list_of_tables = ["language",
+                  "film",
+                  "inventory",
+                  "film_actor",
+                  "actor",
+                  "rental",
+                  "payment",
+                  "film_category",
+                  "category",
+                  "staff",
+                  "store",
+                  "customer",
+                  "app_id",
+                  "address",
+                  "city"]
 
-# Run query
-df = pd.read_sql(query, engine)
 
-# Save result to csv
-df.to_csv("customer_sample.csv")
 
+for table in list_of_tables:
+
+    # Run query
+    df = pd.read_sql(f"SELECT * FROM main.{table};", engine)
+
+    # Save result to csv
+    df.to_csv(f"data/{table}.csv")
