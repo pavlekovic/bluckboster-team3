@@ -128,7 +128,7 @@ df_loaded.info()
 ## --------------------------------------- STREAMLIT APP ---------------------------------------
 
 # Create tabs
-tab_homepage, tab_ratings, tab_film_details, tab_actors = st.tabs(["Homepage", "Ratings", "Film details", "Actors"])
+tab_homepage, tab_ratings, tab_actors, tab_film_details  = st.tabs(["Homepage", "Ratings", "Actors", "Film details"])
 
 # Page 1 - Welcome Page (low priority) - brief intro plus link to README (if we eventually make a Readme)
 
@@ -232,15 +232,22 @@ with tab_actors:
 
     # Actor name filter
     page4_actor_names = sorted(page4_df["actor_full_name"].dropna().unique())
-    page4_selected_actor = st.selectbox("Select Actor Name", page4_actor_names, index=0)
+    page4_selected_actor = st.selectbox(
+        "Select Actor Name",
+        page4_actor_names,
+        index=None)
 
     # Rating filter
     page4_ratings = sorted(page4_df["rating"].dropna().unique())
-    page4_selected_ratings = st.multiselect("Select Rating", page4_ratings, default=page4_ratings)
+    page4_selected_ratings = st.multiselect(
+        "Select Rating",
+        page4_ratings)
 
     # Category filter
     page4_categories = sorted(page4_df["category_name"].dropna().unique())
-    page4_selected_categories = st.multiselect("Select Category", page4_categories, default=page4_categories)
+    page4_selected_categories = st.multiselect(
+        "Select Category",
+        page4_categories)
 
     # Apply filters
     page4_filtered_df = page4_df[
@@ -250,37 +257,37 @@ with tab_actors:
     ]
 
     page4_grouped_df = (
-                    page4_filtered_df
-                    .groupby(["title", "release_year", "length", "rating", "language", "category_name"])
-                    .agg({"actor_full_name": lambda x: ", ".join(sorted(set(x)))})
-                    .reset_index()
-                )
+        page4_filtered_df
+        .groupby(["title", "release_year", "length", "rating", "language", "category_name"])
+        .agg({"actor_full_name": lambda x: ", ".join(sorted(set(x)))})
+        .reset_index()
+    )
 
-
-    page4_grouped_df = page4_grouped_df[["title", 
-                                          "release_year", 
-                                          "length", 
-                                          "rating", 
-                                          "language", 
-                                          "category_name"
-                                          ]                                          ]
-
+    page4_grouped_df = page4_grouped_df[
+        ["title", 
+        "release_year", 
+        "length", 
+        "rating", 
+        "language", 
+        "category_name"]
+    ]
 
     page4_grouped_df.rename(columns={
-                        "title": "Title",
-                        "release_year": "Release Year",
-                        "length": "Length (mins)",
-                        "rating": "Rating",
-                        "category_name": "Category",
-                        "language": "Language"
-                    }, inplace=True)
+        "title": "Title",
+        "release_year": "Release Year",
+        "length": "Length (mins)",
+        "rating": "Rating",
+        "category_name": "Category",
+        "language": "Language"
+        }, inplace=True)
 
     page4_grouped_df = page4_grouped_df.sort_values(by="Title")
 
 
     # Display results
-    st.subheader("List of Movies they've been in:")
-    st.dataframe(page4_grouped_df.reset_index(drop=True))
+    if page4_selected_actor and page4_selected_ratings and page4_selected_categories:
+        st.subheader("List of Movies they've been in:")
+        st.dataframe(page4_grouped_df.reset_index(drop=True))
 
 
 # Page 3 - Search for a film and get details of that film (rating, year, actors, availability, etc)
@@ -297,10 +304,16 @@ with tab_film_details:
     
     # Movie and city selection
     movies = df_loaded['title'].dropna().drop_duplicates().sort_values().tolist()
-    selected_title = st.selectbox("Select a movie", movies)
+    selected_title = st.selectbox(
+        "Select a movie",
+        movies,
+        index=None)
 
     cities = df_loaded['store_city'].dropna().drop_duplicates().sort_values().tolist()
-    selected_city = st.selectbox("Select a city", cities)
+    selected_city = st.selectbox(
+        "Select a city",
+        cities,
+        index=None)
 
     # Filter for selected city and movie
     city_movie_df = df_loaded[
@@ -308,49 +321,50 @@ with tab_film_details:
         (df_loaded['title'] == selected_title)
     ]
 
-    if not city_movie_df.empty:
-        # Check availability per store
-        city_movie_df['available'] = city_movie_df.apply(
-            lambda row: pd.isna(row['rental_date']) or pd.notna(row['return_date']),
-            axis=1
-        )
-        is_available = city_movie_df['available'].any()
+    if selected_title and selected_city:
+        if not city_movie_df.empty:
+            # Check availability per store
+            city_movie_df['available'] = city_movie_df.apply(
+                lambda row: pd.isna(row['rental_date']) or pd.notna(row['return_date']),
+                axis=1
+            )
+            is_available = city_movie_df['available'].any()
 
-        # Display movie details
-        st.subheader(selected_title)
-        st.text(f"Category: {city_movie_df.iloc[0]['category_name']}")
-        st.text(f"Rating: {city_movie_df.iloc[0]['rating']}")
-        st.text(f"Language: {city_movie_df.iloc[0]['language']}")
-        st.text(f"Release Year: {city_movie_df.iloc[0]['release_year']}")
-        st.text(f"Description: {city_movie_df.iloc[0]['description']}")
-        st.text(f"Price: £{city_movie_df.iloc[0]['amount']}")
+            # Display movie details
+            st.subheader(selected_title)
+            st.text(f"Category: {city_movie_df.iloc[0]['category_name']}")
+            st.text(f"Rating: {city_movie_df.iloc[0]['rating']}")
+            st.text(f"Language: {city_movie_df.iloc[0]['language']}")
+            st.text(f"Release Year: {city_movie_df.iloc[0]['release_year']}")
+            st.text(f"Description: {city_movie_df.iloc[0]['description']}")
+            st.text(f"Price: £{city_movie_df.iloc[0]['amount']}")
 
-        # Show availability per store
-        st.text(f"Availability in {selected_city}:")
-        store_availability = city_movie_df.groupby('store_id')['available'].any()
-        for store_id, available in store_availability.items():
-            status = "Available" if available else "Not Available"
-            st.text(f"Store {int(store_id)}: {status}")
+            # Show availability per store
+            st.text(f"Availability in {selected_city}:")
+            store_availability = city_movie_df.groupby('store_id')['available'].any()
+            for store_id, available in store_availability.items():
+                status = "Available" if available else "Not Available"
+                st.text(f"Store {int(store_id)}: {status}")
 
-        # Suggest similar movies if not available
-        if not is_available:
-            st.warning("This movie is currently not available. Here are some suggestions:")
-            selected_movie_row = city_movie_df.iloc[0]
+            # Suggest similar movies if not available
+            if not is_available:
+                st.warning("This movie is currently not available. Here are some suggestions:")
+                selected_movie_row = city_movie_df.iloc[0]
 
-            suggestions = df_loaded[
-                (df_loaded['title'] != selected_title) &
-                (df_loaded['category_name'] == selected_movie_row['category_name']) &
-                (df_loaded['rating'].between(selected_movie_row['rating'] - 0.5,
-                                            selected_movie_row['rating'] + 0.5))
-            ]['title'].drop_duplicates().tolist()
+                suggestions = df_loaded[
+                    (df_loaded['title'] != selected_title) &
+                    (df_loaded['category_name'] == selected_movie_row['category_name']) &
+                    (df_loaded['rating'].between(selected_movie_row['rating'] - 0.5,
+                                                selected_movie_row['rating'] + 0.5))
+                ]['title'].drop_duplicates().tolist()
 
-            if suggestions:
-                for movie in suggestions[:5]:  # show up to 5 suggestions
-                    st.text(f"- {movie}")
-            else:
-                st.text("No similar movies available.")
-    else:
-        st.text(f"The movie '{selected_title}' is not available in {selected_city}.")
+                if suggestions:
+                    for movie in suggestions[:5]:  # show up to 5 suggestions
+                        st.text(f"- {movie}")
+                else:
+                    st.text("No similar movies available.")
+        else:
+            st.text(f"The movie '{selected_title}' is not available in {selected_city}.")
 
 # Page 5 - EXTRA - Can also generate a movie recommendation 
 # ------ based on preferred actor 
