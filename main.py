@@ -144,6 +144,10 @@ with tab_homepage:
     # Title and intro
     st.title("Welcome to BluckBoster")
     
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.image("images/vhs_gif.gif")   
+    
     # Description
     st.write(
         """
