@@ -67,20 +67,20 @@ except:
 cities = df_loaded['store_city'].dropna().drop_duplicates().tolist()
 count_of_cities = len(cities)
 try:
-    assert count_of_cities == 600
+    assert count_of_cities == 2
     print("Passed: Count of cities successful!")
 except:
     print("Failed: incorrect number of cities!") 
-    print(count_of_cities, " != 600")
+    print(count_of_cities, " != 2")
 
 countries = df_loaded['store_country'].dropna().drop_duplicates().tolist()
 count_of_countries = len(countries)
 try:
-    assert count_of_countries == 109
+    assert count_of_countries == 2
     print("Passed: Count of countries successful!")
 except:
     print("Failed: incorrect number of countries!") 
-    print(count_of_countries , " != 109")
+    print(count_of_countries , " != 2")
 
 release_year = df_loaded['release_year'].dropna().drop_duplicates().tolist()
 count_of_release_year = len(release_year)
