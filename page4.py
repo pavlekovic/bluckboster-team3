@@ -141,7 +141,7 @@ with page3_tab:
 # - show films the actor was in
 # Filter by category and/or year and/or rating 
 with page4_tab:
-    st.header("More about your favourite actor!")
+    #st.header("More about your favourite actor!")
     page4_df = df_loaded.copy()
 
     page4_df["actor_full_name"] = (
@@ -151,7 +151,7 @@ with page4_tab:
     page4_df = page4_df[page4_df["actor_full_name"].str.strip() != ""]
 
     # Sidebar filters
-    st.title("Filter by Actor Name")
+    st.title("Search for an Actor/Actress")
 
     # Actor name filter
     page4_actor_names = sorted(page4_df["actor_full_name"].dropna().unique())
@@ -180,22 +180,26 @@ with page4_tab:
                 )
 
 
-#    page4_display_df = page4_filtered_df[["title", 
-#                                          "release_year", 
-#                                          "length", 
-#                                          "rating", 
-#                                          "language", 
-#                                          "category_name"]]
+    page4_grouped_df = page4_grouped_df[["title", 
+                                          "release_year", 
+                                          "length", 
+                                          "rating", 
+                                          "language", 
+                                          "category_name"
+                                          ]                                          ]
 
 
     page4_grouped_df.rename(columns={
                         "title": "Title",
-                        "release_year": "Year",
+                        "release_year": "Release Year",
                         "length": "Length (mins)",
                         "rating": "Rating",
                         "category_name": "Category",
                         "language": "Language"
                     }, inplace=True)
+
+    page4_grouped_df = page4_grouped_df.sort_values(by="Title")
+
 
     # Display results
     st.subheader("List of Movies they've been in:")
