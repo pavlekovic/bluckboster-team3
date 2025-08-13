@@ -127,12 +127,49 @@ df_loaded.info()
 
 ## --------------------------------------- STREAMLIT APP ---------------------------------------
 
+
+# ---------- Page config ----------
+st.set_page_config(
+    page_title="BluckBoster",
+    page_icon="🎬",
+    layout="wide"
+)
+
 # Create tabs
 tab_homepage, tab_ratings, tab_actors, tab_film_details  = st.tabs(["Homepage", "Ratings", "Actors", "Film details"])
 
 # Page 1 - Welcome Page (low priority) - brief intro plus link to README (if we eventually make a Readme)
 
-# with tab_homepage:
+with tab_homepage:
+    # Title and intro
+    st.title("Welcome to BluckBoster")
+    
+    # Description
+    st.write(
+        """
+        **BluckBoster** is an app for those who long for simpler times when family fun 
+        was renting out movies from a local store.  
+
+        It is designed to explore movie rental data, providing insights into rentals, 
+        revenue, categories, and more.
+        """
+    )
+
+    # Team credits
+    st.subheader("Created by:")
+    st.write(
+        """
+        - Abdullah  
+        - Comfort  
+        - Luke  
+        - Renato  
+        - Sahil
+        """
+    )
+
+# Optional: add a horizontal divider and footer
+st.markdown("---")
+st.caption("BluckBoster • Team 3")
 
 # Page 2 - Rank movies in each category based on frequency of rental (count rental ids)
 # - include filter for rating (E.G PG rated)
@@ -140,7 +177,6 @@ tab_homepage, tab_ratings, tab_actors, tab_film_details  = st.tabs(["Homepage", 
 # Content for tab 2
 with tab_ratings:
     st.header("Rank movies by rental frequency")
-
     # Create ratings filter
     f1_ratings_all = df_loaded["rating"].dropna() # Remove NAs
     f1_unique_ratings = f1_ratings_all.unique() # Get unique
@@ -300,7 +336,7 @@ with tab_actors:
 # Content for tab 4
 with tab_film_details:
     
-    st.header("Search for an Actor/Actress")
+    st.header("Search for film details")
     
     # Movie and city selection
     movies = df_loaded['title'].dropna().drop_duplicates().sort_values().tolist()
