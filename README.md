@@ -1,86 +1,148 @@
-![Digital Futures Academy](https://github.com/digital-futures-academy/DataScienceMasterResources/blob/main/Resources/datascience-notebook-header.png?raw=true)
+# BluckBoster — Movie Rental Analytics App
 
-# Extract and Transform Team Challenge
-
-Our customer, BluckBoster Entertainment, has asked us to help them.  They are data ignorant!  They have collected a myriad of data about their customers, the products they rent out, stores and employees.  The issue is, they have no idea what it may tell them!  They have asked us to help them understand their data better and perform a full company review to uncover any insights that may be hidden in the data.
-
-We have been asked by our Data Science team to do some extraction and transformation of the data.  We have access to a relational database with a number of tables of data.  However, they have been unclear as to what they mean by this, so you will need to do some Exploratory Data Analysis (EDA) to understand the data and what it may tell them.
+**BluckBoster** is a Streamlit-based analytics app for exploring movie rental data from the **Pagila** sample database.  
+It was created by **Abdullah**, **Comfort**, **Luke**, **Renato**, and **Sahil**.
 
 ---
 
-## Database Access
+## How the App Works
 
-You will use the following connection details to access the database:
+1. **Load data from Pagila database**  
+   - The app connects to the Pagila PostgreSQL database.
+   - It joins all relevant tables to make sure we have a **complete dataset** containing films, rentals, actors, categories, stores, and payments.
+   - The joined dataset is loaded into a **pandas DataFrame**.
 
-```txt
-host: data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com
-port: 5432
-database: pagila
-schema: main
-```
-
-Your username and password can be found in your Noodle profile.
+2. **Export to CSV for faster reloads**  
+   - After the initial load, the DataFrame is exported to a CSV file.
+   - On subsequent runs, the app can load data directly from this CSV instead of re-querying the database — speeding up load times.
 
 ---
 
-## Data
+## Pagila Database Schema
 
-The following is the Entity Relationship Diagram (ERD) for the database:
+Below is a simplified diagram showing how the tables are joined to produce the final dataset:
 
 ![main ERD](./images/mainERD.png)
 
 ---
 
-## Tasks
+## Pages in the App
 
-1. Connect to the database and explore the data
-2. Decide on some initial questions you think the data may be able to answer
-3. Extract the data from the database
-4. Transform the data into a format that can be used for analysis, including cleaning it
-5. Perform some initial analysis to understand the data better
-6. Create a report on your findings - you should aim for a 5-10 minute presentation with good visualisations to help tell the story
+The app contains **four main pages**:
 
----
+1. **Homepage**  
+   - Displays basic information about the app.
+   - Includes a retro-themed GIF for a nostalgic touch.
 
-## Baseline Criteria
+2. **Ratings Page**  
+   - Lets you see the **top rented movies**.
+   - Supports **filters** by category (genre) and rating (e.g., G, PG, PG-13, R).
 
-You should aim to utilise the following tools and techniques:
+3. **Actors Page**  
+   - Shows all movies an actor has appeared in.
+   - Supports **filters** by rating and genre.
+   - Useful for exploring an actor’s filmography within the rental dataset.
 
-- SQL
-- Python
-- Pandas
-- Matplotlib or Seaborn
-- Jupyter Notebooks
-- Markdown
-- Git/GitHub
-- Data extraction
-- Data transformation
-- Data cleaning
-- Data visualisation
-- Presentation skills
+4. **Film Details Page**  
+   - Displays **further details** for a selected film, including:
+     - Description
+     - Rental price
+     - Language
+     - Store availability
+     - Other metadata
 
 ---
 
-## Presentation
+## Tech Stack
 
-You should aim to present your findings in a 5-10 minute presentation.  You should aim to include the following:
-
-- An introduction to the data and the problem
-- A summary of the data extraction and transformation process
-- A summary of the analysis you have performed
-- Any insights you have uncovered
+- **Python** (pandas, SQLAlchemy)
+- **PostgreSQL** (Pagila sample DB)
+- **Streamlit** (web app framework)
 
 ---
 
-## Submission
+## Running the App
 
-You should submit, as a group and via the Noodle submission link, the following:
-
-1. A link to your team's GitHub repository that includes:
-   - A Jupyter Notebook with your analysis
-   - Your presentation slides
-   - Any other relevant files
+1. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # macOS/Linux
+   # .venv\Scripts\activate   # Windows
+   pip install -r requirements.txt
+   streamlit run main.py
 
 ---
 
+# User Stories & Acceptance Criteria
+
+## 1. Search for a Movie by Title
+**As a** movie rental customer  
+**I want to** search for a movie by title  
+**So that** I can quickly find the film I want to rent  
+
+**Acceptance Criteria:**
+- User can type a movie title into a search box.
+- Matching movies are displayed **as the user types** or **after clicking Search**.
+- Search results show **unique movie titles** without duplicates.
+
 ---
+
+## 2. Filter Movies by City
+**As a** movie rental customer  
+**I want to** select a city when searching for a movie  
+**So that** I only see availability for stores near me  
+
+**Acceptance Criteria:**
+- A dropdown or input field allows the user to **select a city**.
+- The list of available movies updates to reflect the chosen city.
+- If no city is selected, all movies are shown by default.
+
+---
+
+## 3. View Detailed Movie Information
+**As a** movie rental customer  
+**I want to** see the details of a selected movie including rating, runtime, release year, description, language, category, and price  
+**So that** I can decide if it is the right choice for me  
+
+**Acceptance Criteria:**
+- When a movie is selected, **all details are displayed** in a structured format.
+- Price is shown with the **£ symbol** before the amount.
+- All data fields appear even if some values are missing (placeholders used where necessary).
+
+---
+
+## 4. Notify When Movie is Not Available
+**As a** movie rental customer  
+**I want to** be informed if the movie I want is not available in my city  
+**So that** I can choose another film instead of waiting  
+
+**Acceptance Criteria:**
+- If the selected movie is unavailable in the chosen city, a message clearly states:  
+  `"Not Available in Your City"`.
+- The availability check is based on **rental and return dates** for that city’s stores.
+- The message is visually distinct so it cannot be missed.
+
+---
+
+## 5. Suggest Alternatives When Movie is Unavailable
+**As a** movie rental customer  
+**I want to** receive alternative movie suggestions when my chosen movie is unavailable  
+**So that** I can still find a similar movie to watch  
+
+**Acceptance Criteria:**
+- Suggestions are based on **matching category** and **similar rating** (+/- 1 point).
+- At least **3 alternative movies** are displayed when possible.
+- Each suggestion includes **title**, **rating**, and **availability** in the chosen city.
+
+---
+
+## 6. Search for Movies by Actor
+**As a** movie rental customer  
+**I want to** search for movies by an actor’s name  
+**So that** I can find and rent films featuring my favorite performers  
+
+**Acceptance Criteria:**
+- User can type an **actor’s name** into a search box.
+- Search results display **all movies** in the database featuring that actor.
+- Results show **movie title**, **release year**, and **availability** in the selected city.
+- If no matches are found, a clear `"No movies found"` message is displayed.
