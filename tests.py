@@ -64,6 +64,15 @@ except:
     print("Failed: incorrect number of movies!") 
     print(count_of_movies, " != 1000")
 
+store_ids = df_loaded['store_id'].dropna().drop_duplicates().tolist()
+count_of_store_ids = len(store_ids)
+try:
+    assert count_of_store_ids == 2
+    print("Passed: Count of store_ids successful!")
+except:
+    print("Failed: incorrect number of store_ids!") 
+    print(count_of_store_ids, " != 2")
+
 cities = df_loaded['store_city'].dropna().drop_duplicates().tolist()
 count_of_cities = len(cities)
 try:
