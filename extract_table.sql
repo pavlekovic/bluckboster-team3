@@ -71,3 +71,9 @@ ON city.city_id = addr.city_id
 LEFT JOIN country 
 ON country.country_id = city.country_id 
 ;
+
+SELECT COUNT(DISTINCT release_year) AS distinct_year_count
+FROM film;
+
+
+
