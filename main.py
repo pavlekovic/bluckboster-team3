@@ -127,7 +127,7 @@ def main():
     )
 
     # Main-page tabs instead of sidebar
-    tab1, tab2, tab3, tab4 = st.tabs(["Homepage", "Popular", "Search actors", "Rent a film"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Homepage", "Popular", "Search actor/actress", "Rent a film"])
 
     with tab1:
         display_homepage()
