@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 ## --------------------------------------- READ FROM CSV ---------------------------------------
 
 # Load the CSV file - it runs faster (comment out the sql part for now)
-df_loaded = pd.read_csv("output.csv")
+df_loaded = pd.read_csv("extract/output.csv")
 
 # Preview the result of csv
 df_loaded.info()
